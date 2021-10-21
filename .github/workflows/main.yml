@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '15 5 * * 1'
+    - cron: '15 5 * * 2'  # Weekly, 1 day after the upstream
 
 defaults:
   run:
@@ -15,49 +15,57 @@ jobs:
   make-docker-images:
     strategy:
       matrix:
-        postgres: [9.6, 10, 11, 12, 13, 14]
-        postgis: ['2.5', '3.1']
-        variant: [default, alpine]
-        exclude:
-          - postgres: 12
-            postgis: '2.5'
-          - postgres: 13
-            postgis: '2.5'
-          - postgres: 14
-            postgis: '2.5'
-        include:
-          - postgres: 13
-            postgis: master
-            variant: default
-          - postgres: 14
-            postgis: master
-            variant: default
-    name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }} variant ${{ matrix.variant }}
+        # list compatible with arm64; exclude the latest version set for use with "include" below
+        postgres: [13]
+        postgis: ['3.1']
+        latest: [false]
+        include:  # only use the single latest version set with "include"
+        - postgres: 14
+          postgis: '3.1'
+          latest: true
+    name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }}
     runs-on: ubuntu-20.04
-    continue-on-error: ${{ matrix.postgis == 'master' }}
     env:
       VERSION: ${{ matrix.postgres }}-${{ matrix.postgis }}
-      VARIANT: ${{ matrix.variant }}
 
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v2
 
-    - name: Build docker image for ${{ env.VERSION }} ${{ env.VARIANT }}
-      run: make test
-
-    - name: Login to dockerhub
-      uses: docker/login-action@v1
-      if: ${{  (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request')  }}
+    - name: Set up QEMU for amd64 and arm64
+      uses: docker/setup-qemu-action@27d0a4f181a40b142cce983c5393082c365d1480  # v1.2.0 (2021-10-22)
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        platforms: linux/amd64,linux/arm64
 
-    - name: Push docker image to dockerhub
-      if: ${{  (github.ref == 'refs/heads/master') && (github.event_name != 'pull_request')  }}
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
-        DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-      run: make push
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25  # v1.6.0 (2021-10-22)
 
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@3a3bb3a81753dc99f090d24ee7e5343838b73a96  # v3.5.0 (2021-10-22)
+      with:
+        images: ghcr.io/${{ github.repository_owner }}/postgis
+        labels: |
+          org.opencontainers.image.title=postgis
+          org.opencontainers.image.version=${{ env.VERSION }}
+          org.opencontainers.image.base.name=docker.io/postgis/postgis:${{ env.VERSION }}
+        tags: |
+          type=raw,value=${{ env.VERSION }},enable=true,priority=200
+          type=raw,value=latest,enable=${{ matrix.latest }},priority=200
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9  # v1.10.0 (2021-10-22)
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+      if: ${{ (github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT }}
+
+    - name: Multi-platform build and push
+      uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229  # v2.7.0 (2021-10-22)
+      with:
+        platforms: linux/amd64,linux/arm64
+        context: github.com/postgis/docker-postgis#master
+        file: ${{ env.VERSION }}/Dockerfile
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        pull: true
+        push: ${{ (github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT }}
