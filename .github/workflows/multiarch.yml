@@ -61,7 +61,7 @@ jobs:
           type=raw,value=latest,enable=${{ matrix.latest }},priority=200
 
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@6af3c118c8376c675363897acf1757f7a9be6583
+      uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
