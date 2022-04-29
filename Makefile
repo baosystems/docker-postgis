@@ -76,11 +76,13 @@ update:
 define build-version
 build-$1:
 ifeq ($(do_default),true)
-	$(DOCKER) build --pull -t $(REPO_NAME)/$(IMAGE_NAME):$(shell echo $1) $1
+	$(DOCKER) buildx build --platform linux/amd64,linux/arm64 --pull --tag $(REPO_NAME)/$(IMAGE_NAME):$(shell echo $1) $1
+	$(DOCKER) buildx build --output type=docker,dest=- --tag $(REPO_NAME)/$(IMAGE_NAME):$(shell echo $1) $1 | docker load
 endif
 ifeq ($(do_alpine),true)
 ifneq ("$(wildcard $1/alpine)","")
-	$(DOCKER) build --pull -t $(REPO_NAME)/$(IMAGE_NAME):$(shell echo $1)-alpine $1/alpine
+	$(DOCKER) buildx build --platform linux/amd64,linux/arm64 --pull --tag $(REPO_NAME)/$(IMAGE_NAME):$(shell echo $1)-alpine $1/alpine
+	$(DOCKER) buildx build --output type=docker,dest=- --tag $(REPO_NAME)/$(IMAGE_NAME):$(shell echo $1)-alpine $1/alpine | docker load
 endif
 endif
 endef
@@ -123,18 +125,18 @@ push: $(foreach version,$(VERSIONS),push-$(version)) $(PUSH_DEP)
 define push-version
 push-$1: test-$1
 ifeq ($(do_default),true)
-	$(DOCKER) image push $(REPO_NAME)/$(IMAGE_NAME):$(version)
+	$(DOCKER) buildx build --platform linux/amd64,linux/arm64 --push --tag $(REPO_NAME)/$(IMAGE_NAME):$(version)
 endif
 ifeq ($(do_alpine),true)
 ifneq ("$(wildcard $1/alpine)","")
-	$(DOCKER) image push $(REPO_NAME)/$(IMAGE_NAME):$(version)-alpine
+	$(DOCKER) buildx build --platform linux/amd64,linux/arm64 --push --tag $(REPO_NAME)/$(IMAGE_NAME):$(version)-alpine
 endif
 endif
 endef
 $(foreach version,$(VERSIONS),$(eval $(call push-version,$(version))))
 
 push-latest: tag-latest $(PUSH_LATEST_DEP)
-	$(DOCKER) image push $(REPO_NAME)/$(IMAGE_NAME):latest
+	$(DOCKER) buildx build --platform linux/amd64,linux/arm64 --push --tag $(REPO_NAME)/$(IMAGE_NAME):latest
 	@$(DOCKER) run -v "$(PWD)":/workspace \
                       -e DOCKERHUB_USERNAME='$(DOCKERHUB_USERNAME)' \
                       -e DOCKERHUB_PASSWORD='$(DOCKERHUB_PASSWORD)' \
