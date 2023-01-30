@@ -45,7 +45,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@8c0edbc76e98fa90f69d9a2c020dcb50019dc325
+      uses: docker/setup-buildx-action@5e716dcfd653738c2d1db099bfba194a84158be4
 
     - name: Docker meta
       id: meta
