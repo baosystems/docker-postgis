@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         # exclude the latest version set for use with "include" below
-        postgres: [11, 12, 13, 14]
+        postgres: [11, 12, 13, 14, 15]
         postgis: ['3.3']
         latest: [false]
         include:
