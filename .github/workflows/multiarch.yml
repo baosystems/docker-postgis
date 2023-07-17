@@ -96,7 +96,7 @@ jobs:
 
     - name: Multi-platform build and push (depot.dev)
       if: ${{ (github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT }}
-      uses: depot/build-push-action@60afb066b9890d18f04ac7ba8569725c1f880838
+      uses: depot/build-push-action@1eb94a4ae1573e2a37dd420b31e608e0f4774005
       with:
         project: p4q8k8mb22
         no-cache: true
