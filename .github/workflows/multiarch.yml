@@ -61,7 +61,7 @@ jobs:
       uses: docker/setup-buildx-action@4c0219f9ac95b02789c1075625400b2acbff50b1
 
     - name: Set up Depot CLI
-      uses: depot/setup-action@b6821033ac2e40632f45def8e8a4f158c6f60980
+      uses: depot/setup-action@0cd1716c2eb8606eee7f18de8f87fddd0e1c2fd2
 
     - name: Docker meta
       id: meta
