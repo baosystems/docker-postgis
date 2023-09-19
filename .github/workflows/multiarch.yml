@@ -27,11 +27,11 @@ jobs:
     strategy:
       matrix:
         # exclude the latest version set for use with "include" below
-        postgres: [12, 13, 14, '16rc1']
+        postgres: [12, 13, 14, 15]
         postgis: ['3.4']
         latest: [false]
         include:
-        - postgres: 15  # only use the single latest version with "latest: true"
+        - postgres: 16  # only use the single latest version with "latest: true"
           postgis: '3.4'
           latest: true
         - postgres: 11  # 3.4 is not compatible with PostgreSQL 11
