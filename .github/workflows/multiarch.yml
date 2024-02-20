@@ -34,9 +34,6 @@ jobs:
         - postgres: 16  # only use the single latest version with "latest: true"
           postgis: '3.4'
           latest: true
-        - postgres: 11  # 3.4 is not compatible with PostgreSQL 11
-          postgis: '3.3'
-          latest: false
 
     name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }}
 
