@@ -101,7 +101,7 @@ jobs:
         project: p4q8k8mb22
         no-cache: true
         platforms: linux/amd64,linux/arm64
-        context: github.com/postgis/docker-postgis#master
+        context: https://github.com/postgis/docker-postgis.git#master
         file: ${{ env.VERSION }}/Dockerfile
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
