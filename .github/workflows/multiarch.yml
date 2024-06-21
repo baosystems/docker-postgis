@@ -84,7 +84,7 @@ jobs:
 
     - name: Multi-platform build (docker buildx)
       if: ${{ !((github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT) }}
-      uses: docker/build-push-action@94f8f8c2eec4bc3f1d78c1755580779804cb87b2
+      uses: docker/build-push-action@f6010ea70151369b06f0194be1051fbbdff851b2
       with:
         platforms: linux/amd64,linux/arm64
         context: https://github.com/postgis/docker-postgis.git#master
