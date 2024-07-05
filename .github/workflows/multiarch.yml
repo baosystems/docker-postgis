@@ -55,7 +55,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb
+      uses: docker/setup-buildx-action@4fd812986e6c8c2a69e18311145f9371337f27d4
 
     - name: Set up Depot CLI
       uses: depot/setup-action@eb2efd6287c794d456be5e1a7963fa8772c39ce5
