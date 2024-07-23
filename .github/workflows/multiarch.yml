@@ -50,7 +50,7 @@ jobs:
     steps:
 
     - name: Set up QEMU for amd64 and arm64
-      uses: docker/setup-qemu-action@5927c834f5b4fdf503fca6f4c7eccda82949e1ee
+      uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf
       with:
         platforms: linux/amd64,linux/arm64
 
