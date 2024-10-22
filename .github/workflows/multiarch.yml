@@ -25,19 +25,20 @@ jobs:
   make-docker-images:
 
     strategy:
+      fail-fast: false
       matrix:
         # exclude the latest version set for use with "include" below
-        postgres: [12, 13, 14, 15]
-        postgis: ['3.4']
+        postgres: [12, 13, 14, 15, 16]
+        postgis: ['3.5']
         latest: [false]
         include:
-        - postgres: 16  # only use the single latest version with "latest: true"
-          postgis: '3.4'
+        - postgres: 17  # only use the single latest version with "latest: true"
+          postgis: '3.5'
           latest: true
 
     name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }}
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     permissions:
       contents: read
