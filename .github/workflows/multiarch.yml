@@ -83,10 +83,11 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Multi-platform build (docker buildx)
+    - name: Multi-platform build without push
       if: ${{ !((github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT) }}
-      uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991
+      uses: depot/build-push-action@636daae76684e38c301daa0c5eca1c095b24e780
       with:
+        project: p4q8k8mb22
         platforms: linux/amd64,linux/arm64
         context: https://github.com/postgis/docker-postgis.git#master
         file: ${{ env.VERSION }}/Dockerfile
@@ -95,7 +96,7 @@ jobs:
         pull: true
         push: false
 
-    - name: Multi-platform build and push (depot.dev)
+    - name: Multi-platform build and push
       if: ${{ (github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT }}
       uses: depot/build-push-action@636daae76684e38c301daa0c5eca1c095b24e780
       with:
