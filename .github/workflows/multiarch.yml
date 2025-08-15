@@ -85,7 +85,7 @@ jobs:
 
     - name: Multi-platform build without push
       if: ${{ !((github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT) }}
-      uses: depot/build-push-action@2583627a84956d07561420dcc1d0eb1f2af3fac0
+      uses: depot/build-push-action@9785b135c3c76c33db102e45be96a25ab55cd507
       with:
         project: p4q8k8mb22
         platforms: linux/amd64,linux/arm64
@@ -98,7 +98,7 @@ jobs:
 
     - name: Multi-platform build and push
       if: ${{ (github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT }}
-      uses: depot/build-push-action@2583627a84956d07561420dcc1d0eb1f2af3fac0
+      uses: depot/build-push-action@9785b135c3c76c33db102e45be96a25ab55cd507
       with:
         project: p4q8k8mb22
         no-cache: true
