@@ -27,14 +27,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # exclude the latest version set for use with "include" below
-        postgres: [13, 14, 15, 16, 17]
+        # Exclude the latest version here, and use with "include" below
+        postgres: [13, 14, 15, 16]
         postgis: ['3.5']
-        latest: [false]
+        latest_major: [true]
+        latest_overall: [false]
         include:
-        - postgres: 18  # only use the single latest version with "latest: true"
+        - postgres: 17  # PostgreSQL 17 multiple versions of PostGIS available
+          postgis: '3.5'
+          latest_major: false
+          latest_overall: false
+        - postgres: 17
           postgis: '3.6'
-          latest: true
+          latest_major: true
+          latest_overall: false
+        - postgres: 18  # Only use the single latest version with "latest_overall: true"
+          postgis: '3.6'
+          latest_major: true
+          latest_overall: true
 
     name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }}
 
@@ -72,8 +82,8 @@ jobs:
           org.opencontainers.image.base.name=docker.io/postgis/postgis:${{ env.VERSION }}
         tags: |
           type=raw,value=${{ env.VERSION }},enable=true,priority=220
-          type=raw,value=${{ matrix.postgres }},enable=true,priority=210
-          type=raw,value=latest,enable=${{ matrix.latest }},priority=200
+          type=raw,value=${{ matrix.postgres }},enable=${{ matrix.latest_major }},priority=210
+          type=raw,value=latest,enable=${{ matrix.latest_overall }},priority=200
 
     - name: Login to GitHub Container Registry
       if: ${{ (github.ref == 'refs/heads/multiarch') && (github.event_name != 'pull_request') && !env.ACT }}
