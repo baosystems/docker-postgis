@@ -51,7 +51,7 @@ jobs:
     steps:
 
     - name: Set up Depot CLI
-      uses: depot/setup-action@b0b1ea4f69e92ebf5dea3f8713a1b0c37b2126a5
+      uses: depot/setup-action@c0b08c3ba30137f89e75961508b587484558ff0f
 
     - name: Docker meta
       id: meta
