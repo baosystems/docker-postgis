@@ -35,10 +35,13 @@ jobs:
         - postgres: 18  # only use the single latest version with "latest: true"
           postgis: '3.6'
           latest: true
+        - postgres: '19beta1'
+          postgis: '3.6'
+          latest: false
 
     name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }}
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     permissions:
       contents: read
