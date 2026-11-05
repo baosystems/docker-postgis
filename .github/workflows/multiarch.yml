@@ -33,10 +33,10 @@ jobs:
         latest: [false]
         include:
         - postgres: 18  # only use the single latest version with "latest: true"
-          postgis: '3.6'
+          postgis: '3.7.0'
           latest: true
         - postgres: '19beta1'
-          postgis: '3.6'
+          postgis: '3.7.0'
           latest: false
 
     name: Build docker image for ${{ matrix.postgres }}-${{ matrix.postgis }}
